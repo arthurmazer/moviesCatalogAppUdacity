@@ -8,6 +8,7 @@ public class Constants {
 
     public static final String API_KEY = "";
     public static final String MOVIESDB_API_BASE_URL = "https://api.themoviedb.org/";
+    public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
     public static final String MOVIEES_DB_BASE_IMG_URL = "http://image.tmdb.org/t/p/";
     public static final String[] MOVIES_DB_IMG_SIZES = {"w92", "w154", "w185", "w342", "w500", "w780", "original"};

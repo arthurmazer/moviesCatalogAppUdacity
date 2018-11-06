@@ -1,8 +1,13 @@
 package com.mazerapp.moviecatalogapp.activities;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -12,8 +17,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mazerapp.moviecatalogapp.R;
+import com.mazerapp.moviecatalogapp.adapters.MovieTrailersAdapter;
 import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieDetails;
+import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieTrailers;
 import com.mazerapp.moviecatalogapp.models.retrofit.MovieDetails;
+import com.mazerapp.moviecatalogapp.models.retrofit.MovieTrailers;
 import com.mazerapp.moviecatalogapp.repositories.MovieRepository;
 import com.mazerapp.moviecatalogapp.utils.Constants;
 import com.mazerapp.moviecatalogapp.utils.Util;
@@ -23,8 +31,9 @@ import java.text.ParseException;
 
 import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_NO_CONNECTION;
 import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_WITH_SERVICE;
+import static com.mazerapp.moviecatalogapp.utils.Constants.YOUTUBE_BASE_URL;
 
-public class MovieDetailsActivity extends AppCompatActivity {
+public class MovieDetailsActivity extends AppCompatActivity implements OnGetMovieTrailers {
 
 
     private String movieId;
@@ -38,6 +47,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private LinearLayout loadingProgress;
     private RelativeLayout contentPanel;
     private FrameLayout frameNoConnection;
+    private RecyclerView rvTrailers;
+    private MovieTrailersAdapter mTrailerAdapter;
 
 
     @Override
@@ -58,6 +69,18 @@ public class MovieDetailsActivity extends AppCompatActivity {
         loadingProgress = findViewById(R.id.loading_progress);
         contentPanel = findViewById(R.id.content_panel);
         frameNoConnection = findViewById(R.id.frame_no_connection);
+        rvTrailers = findViewById(R.id.rv_trailers);
+
+        mTrailerAdapter = new MovieTrailersAdapter(new MovieTrailersAdapter.OnClickItem() {
+            @Override
+            public void onTrailerClicked(MovieTrailers.TrailerInfo trailerInfo) {
+                String youtubeUrl = YOUTUBE_BASE_URL + trailerInfo.getKey();
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(youtubeUrl)));
+            }
+        });
+        rvTrailers.setLayoutManager(new LinearLayoutManager(this));
+        rvTrailers.setItemAnimator(new DefaultItemAnimator());
+        rvTrailers.setAdapter(mTrailerAdapter);
 
         //coloring progressbar with green
         ProgressBar progressBar = findViewById(R.id.progress_bar);
@@ -75,12 +98,18 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void getMovieDetails(String id){
+    private void getMovieTrailers(String id){
+        MovieRepository movieRepository = new MovieRepository();
+        movieRepository.getMovieTrailers(id, this);
+    }
+
+    private void getMovieDetails(final String id){
         MovieRepository movieRepository = new MovieRepository();
         movieRepository.getMovieDetails(id, new OnGetMovieDetails() {
             @Override
             public void onSuccess(MovieDetails movieDetails) {
 
+                getMovieTrailers(id);
                 frameNoConnection.setVisibility(View.GONE);
 
                 try {
@@ -122,4 +151,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onGetTrailersSuccess(MovieTrailers movieTrailers) {
+        mTrailerAdapter.setListTrailers(movieTrailers.getResults());
+    }
+
+    @Override
+    public void onGetTrailersFailure(int code) {
+
+    }
 }

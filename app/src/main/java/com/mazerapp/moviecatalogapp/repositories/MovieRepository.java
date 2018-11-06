@@ -1,13 +1,16 @@
 package com.mazerapp.moviecatalogapp.repositories;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.mazerapp.moviecatalogapp.interfaces.OnConnectionChecked;
 import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieDetails;
 import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieList;
+import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieTrailers;
 import com.mazerapp.moviecatalogapp.interfaces.retrofit.MovieService;
 import com.mazerapp.moviecatalogapp.models.retrofit.Movie;
 import com.mazerapp.moviecatalogapp.models.retrofit.MovieDetails;
+import com.mazerapp.moviecatalogapp.models.retrofit.MovieTrailers;
 import com.mazerapp.moviecatalogapp.utils.NetworkUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +30,6 @@ import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_WITH_SERVICE;
 public class MovieRepository {
 
     private MovieService movieService;
-
     public MovieRepository(){
         movieService = NetworkUtils.buildUrl().create(MovieService.class);
     }
@@ -114,25 +116,41 @@ public class MovieRepository {
 
     }
 
-    class InternetCheck extends AsyncTask<OnConnectionChecked, Void, Boolean> {
+    public void getMovieTrailers(final String id, final OnGetMovieTrailers onGetMovieTrailers){
+        movieService.getTrailers(id, API_KEY)
+                .enqueue(new Callback<MovieTrailers>() {
+                    @Override
+                    public void onResponse(@NotNull Call<MovieTrailers> call, @NotNull Response<MovieTrailers> response) {
+                        onGetMovieTrailers.onGetTrailersSuccess(response.body());
+                    }
 
-        private OnConnectionChecked onConnectionChecked;
-
-        @Override
-        protected Boolean doInBackground(OnConnectionChecked... onConnectionCheckeds) {
-            if (onConnectionCheckeds[0] != null)
-                onConnectionChecked = onConnectionCheckeds[0];
-            else
-                return false;
-            return NetworkUtils.isInternetConnected();
-        }
-
-        @Override
-        protected void onPostExecute(Boolean isConnected){
-            if (isConnected)
-                onConnectionChecked.isConnected();
-            else
-                onConnectionChecked.isNotConnected();
-        }
+                    @Override
+                    public void onFailure(@NotNull Call<MovieTrailers> call, @NotNull Throwable t) {
+                        onGetMovieTrailers.onGetTrailersFailure(ERROR_WITH_SERVICE);
+                    }
+                });
     }
 }
+
+class InternetCheck extends AsyncTask<OnConnectionChecked, Void, Boolean> {
+
+    private OnConnectionChecked onConnectionChecked;
+
+    @Override
+    protected Boolean doInBackground(OnConnectionChecked... onConnectionCheckeds) {
+        if (onConnectionCheckeds[0] != null)
+            onConnectionChecked = onConnectionCheckeds[0];
+        else
+            return false;
+        return NetworkUtils.isInternetConnected();
+    }
+
+    @Override
+    protected void onPostExecute(Boolean isConnected){
+        if (isConnected)
+            onConnectionChecked.isConnected();
+        else
+            onConnectionChecked.isNotConnected();
+    }
+}
+

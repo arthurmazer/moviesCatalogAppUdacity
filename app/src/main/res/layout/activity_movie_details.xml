@@ -73,7 +73,7 @@
     </FrameLayout>
 
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_below="@id/top_header"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -190,9 +190,29 @@
                 android:layout_marginBottom="32dp"/>
 
 
+            <TextView
+                android:id="@+id/field_movie_trailers"
+                android:text="@string/field_movie_trailers"
+                android:textSize="16sp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:textStyle="bold"
+                android:layout_below="@id/tv_movie_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_trailers"
+                android:layout_below="@id/field_movie_trailers"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
         </RelativeLayout>
 
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </RelativeLayout>
