@@ -1,53 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipe_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
-
-    <LinearLayout
-        android:id="@+id/loading_progress"
-        android:orientation="vertical"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp">
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:text="@string/loading_data"
-            android:textSize="12sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+    tools:context=".activities.MainActivity"
+    android:layout_height="match_parent">
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_movie_catalog"
-        android:visibility="gone"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        >
 
-    <FrameLayout
-        android:id="@+id/frame_no_connection"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_movie_catalog"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true" />
 
-        <fragment class="com.mazerapp.moviecatalogapp.fragments.NoConnectionFragment"
-            android:id="@+id/fragmentNoConnection"
-            android:layout_width="match_parent" android:layout_height="match_parent"/>
+        <FrameLayout
+            android:id="@+id/frame_no_connection"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </FrameLayout>
+            <fragment class="com.mazerapp.moviecatalogapp.fragments.NoConnectionFragment"
+                android:id="@+id/fragmentNoConnection"
+                android:layout_width="match_parent" android:layout_height="match_parent"/>
 
-</RelativeLayout>
+        </FrameLayout>
+
+    </RelativeLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

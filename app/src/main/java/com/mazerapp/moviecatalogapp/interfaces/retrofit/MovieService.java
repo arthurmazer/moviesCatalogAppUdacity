@@ -2,6 +2,7 @@ package com.mazerapp.moviecatalogapp.interfaces.retrofit;
 
 import com.mazerapp.moviecatalogapp.models.retrofit.Movie;
 import com.mazerapp.moviecatalogapp.models.retrofit.MovieDetails;
+import com.mazerapp.moviecatalogapp.models.retrofit.MovieReviews;
 import com.mazerapp.moviecatalogapp.models.retrofit.MovieTrailers;
 
 import retrofit2.Call;
@@ -29,4 +30,7 @@ public interface MovieService {
     Call<MovieTrailers> getTrailers(@Path("movie_id") String movieId,
                                     @Query("api_key") String apiKey);
 
+    @GET("/3/movie/{movie_id}/reviews")
+    Call<MovieReviews> getReviews(@Path("movie_id") String movieId,
+                                  @Query("api_key") String apiKey);
 }

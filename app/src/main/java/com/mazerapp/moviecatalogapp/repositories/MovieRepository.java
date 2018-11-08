@@ -6,10 +6,12 @@ import android.util.Log;
 import com.mazerapp.moviecatalogapp.interfaces.OnConnectionChecked;
 import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieDetails;
 import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieList;
+import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieReviews;
 import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieTrailers;
 import com.mazerapp.moviecatalogapp.interfaces.retrofit.MovieService;
 import com.mazerapp.moviecatalogapp.models.retrofit.Movie;
 import com.mazerapp.moviecatalogapp.models.retrofit.MovieDetails;
+import com.mazerapp.moviecatalogapp.models.retrofit.MovieReviews;
 import com.mazerapp.moviecatalogapp.models.retrofit.MovieTrailers;
 import com.mazerapp.moviecatalogapp.utils.NetworkUtils;
 
@@ -127,6 +129,21 @@ public class MovieRepository {
                     @Override
                     public void onFailure(@NotNull Call<MovieTrailers> call, @NotNull Throwable t) {
                         onGetMovieTrailers.onGetTrailersFailure(ERROR_WITH_SERVICE);
+                    }
+                });
+    }
+
+    public void getMovieReviews(final String id, final OnGetMovieReviews onGetMovieReviews){
+        movieService.getReviews(id, API_KEY)
+                .enqueue(new Callback<MovieReviews>() {
+                    @Override
+                    public void onResponse(@NotNull Call<MovieReviews> call, @NotNull Response<MovieReviews> response) {
+                        onGetMovieReviews.onGetReviewsSuccess(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<MovieReviews> call, @NotNull Throwable t) {
+                        onGetMovieReviews.onGetReviewFailure(ERROR_WITH_SERVICE);
                     }
                 });
     }
