@@ -17,6 +17,9 @@ public class Constants {
     public static final String MOVIE_TITLE_EXTRA = "movie_title_extra";
     public static final String MOVIE_POSTER_PATH_EXTRA = "movie_poster_path_extra";
 
+    public static final String DB_NAME = "movies_db";
+    public static final int DB_VERSION = 3;
+
     public static final int ERROR_NO_CONNECTION = 404;
     public static final int ERROR_WITH_SERVICE = 405;
 

@@ -2,10 +2,9 @@ package com.mazerapp.moviecatalogapp.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,21 +12,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
+
 import com.mazerapp.moviecatalogapp.R;
 import com.mazerapp.moviecatalogapp.adapters.MovieCatalogAdapter;
 import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieList;
-import com.mazerapp.moviecatalogapp.models.retrofit.Movie;
+import com.mazerapp.moviecatalogapp.models.Movie;
 import com.mazerapp.moviecatalogapp.repositories.MovieRepository;
 import com.mazerapp.moviecatalogapp.utils.Constants;
-import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_NO_CONNECTION;
-import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_WITH_SERVICE;
-
 import com.mazerapp.moviecatalogapp.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
+import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_NO_CONNECTION;
+import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_WITH_SERVICE;
 
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void getMostPopularMovieList() {
         swipeLayout.setRefreshing(true);
-        movieRepository = new MovieRepository();
+        movieRepository = new MovieRepository(this);
         movieRepository.getListOfMovies(new OnGetMovieList() {
             @Override
             public void onSuccess(Movie movie) {
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void getTopRatedMovieList() {
         swipeLayout.setRefreshing(true);
-        movieRepository = new MovieRepository();
+        movieRepository = new MovieRepository(this);
         movieRepository.getListOfTopRated(new OnGetMovieList() {
             @Override
             public void onSuccess(Movie movie) {

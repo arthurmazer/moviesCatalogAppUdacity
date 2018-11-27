@@ -21,6 +21,7 @@
     <string name="no_reviews">Não há reviews para este filme</string>
     <string name="fail_trailer">Falha ao buscar os trailers, tente atualizar</string>
     <string name="fail_reviews">Falha ao buscar os reviews, tente atualizar</string>
+    <string name="favorite_title">Favoritar</string>
 
 
 </resources>

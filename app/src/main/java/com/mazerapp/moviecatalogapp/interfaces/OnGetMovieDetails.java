@@ -1,6 +1,6 @@
 package com.mazerapp.moviecatalogapp.interfaces;
 
-import com.mazerapp.moviecatalogapp.models.retrofit.MovieDetails;
+import com.mazerapp.moviecatalogapp.models.MovieDetails;
 
 public interface OnGetMovieDetails {
 

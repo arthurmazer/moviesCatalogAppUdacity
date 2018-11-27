@@ -1,18 +1,16 @@
 package com.mazerapp.moviecatalogapp.repositories;
 
-import android.os.AsyncTask;
-import android.util.Log;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 
-import com.mazerapp.moviecatalogapp.interfaces.OnConnectionChecked;
-import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieDetails;
 import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieList;
-import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieReviews;
-import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieTrailers;
 import com.mazerapp.moviecatalogapp.interfaces.retrofit.MovieService;
-import com.mazerapp.moviecatalogapp.models.retrofit.Movie;
-import com.mazerapp.moviecatalogapp.models.retrofit.MovieDetails;
-import com.mazerapp.moviecatalogapp.models.retrofit.MovieReviews;
-import com.mazerapp.moviecatalogapp.models.retrofit.MovieTrailers;
+import com.mazerapp.moviecatalogapp.models.Movie;
+import com.mazerapp.moviecatalogapp.models.MovieDetails;
+import com.mazerapp.moviecatalogapp.models.MovieFav;
+import com.mazerapp.moviecatalogapp.models.MovieReviews;
+import com.mazerapp.moviecatalogapp.models.MovieTrailers;
 import com.mazerapp.moviecatalogapp.utils.NetworkUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +20,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.mazerapp.moviecatalogapp.utils.Constants.API_KEY;
-import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_NO_CONNECTION;
 import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_WITH_SERVICE;
 
 /**
@@ -32,142 +29,124 @@ import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_WITH_SERVICE;
 public class MovieRepository {
 
     private MovieService movieService;
-    public MovieRepository(){
+    private DbManager dbManager;
+
+    public MovieRepository(Context ctx){
         movieService = NetworkUtils.buildUrl().create(MovieService.class);
+        dbManager = DbManager.getInstance(ctx);
+    }
+
+    public LiveData<Boolean> isFavorite(String idMovie){
+       return dbManager.movieDao().checkMovieIsFavorite(idMovie);
+    }
+
+    public void setMovieAsFavorite(String idMovie, boolean isFavorite){
+       dbManager.movieDao().setMovieFavorite(new MovieFav(idMovie, isFavorite));
     }
 
     public void getListOfMovies(final OnGetMovieList onGetMovieList){
-        InternetCheck internetCheck = new InternetCheck();
-        internetCheck.execute(new OnConnectionChecked() {
-            @Override
-            public void isConnected() {
-                movieService.listMostPopular(API_KEY)
-                        .enqueue(new Callback<Movie>() {
-                            @Override
-                            public void onResponse(@NotNull Call<Movie> call, @NotNull Response<Movie> response) {
-                                onGetMovieList.onSuccess(response.body());
-                            }
+        movieService.listMostPopular(API_KEY)
+                .enqueue(new Callback<Movie>() {
+                    @Override
+                    public void onResponse(@NotNull Call<Movie> call, @NotNull Response<Movie> response) {
+                        onGetMovieList.onSuccess(response.body());
+                    }
 
-                            @Override
-                            public void onFailure(@NotNull Call<Movie> call, @NotNull Throwable t) {
-                                onGetMovieList.onFailure(ERROR_WITH_SERVICE);
-                            }
-                        });
-            }
-
-            @Override
-            public void isNotConnected() {
-                onGetMovieList.onFailure(ERROR_NO_CONNECTION);
-            }
-        });
-
+                    @Override
+                    public void onFailure(@NotNull Call<Movie> call, @NotNull Throwable t) {
+                        onGetMovieList.onFailure(ERROR_WITH_SERVICE);
+                    }
+                });
 
     }
+
     public void getListOfTopRated(final OnGetMovieList onGetMovieList){
-        InternetCheck internetCheck = new InternetCheck();
-        internetCheck.execute(new OnConnectionChecked() {
-            @Override
-            public void isConnected() {
-                movieService.listTopRated(API_KEY)
-                        .enqueue(new Callback<Movie>() {
-                            @Override
-                            public void onResponse(@NotNull Call<Movie> call, @NotNull Response<Movie> response) {
-                                onGetMovieList.onSuccess(response.body());
-                            }
+        movieService.listTopRated(API_KEY)
+                .enqueue(new Callback<Movie>() {
+                    @Override
+                    public void onResponse(@NotNull Call<Movie> call, @NotNull Response<Movie> response) {
+                        onGetMovieList.onSuccess(response.body());
+                    }
 
-                            @Override
-                            public void onFailure(@NotNull Call<Movie> call, @NotNull Throwable t) {
-                                onGetMovieList.onFailure(ERROR_WITH_SERVICE);
-                            }
-                        });
-            }
-
-            @Override
-            public void isNotConnected() {
-                onGetMovieList.onFailure(ERROR_NO_CONNECTION);
-            }
-        });
-    }
-
-
-    public void getMovieDetails(final String id , final OnGetMovieDetails onGetMovieDetails){
-        InternetCheck internetCheck = new InternetCheck();
-        internetCheck.execute(new OnConnectionChecked() {
-            @Override
-            public void isConnected() {
-                movieService.getMovieDetails(id, API_KEY)
-                        .enqueue(new Callback<MovieDetails>() {
-                            @Override
-                            public void onResponse(@NotNull Call<MovieDetails> call, @NotNull Response<MovieDetails> response) {
-                                onGetMovieDetails.onSuccess(response.body());
-                            }
-
-                            @Override
-                            public void onFailure(@NotNull Call<MovieDetails> call, @NotNull Throwable t) {
-                                onGetMovieDetails.onFailure(ERROR_WITH_SERVICE);
-                            }
-                        });
-            }
-
-            @Override
-            public void isNotConnected() {
-                onGetMovieDetails.onFailure(ERROR_NO_CONNECTION);
-            }
-        });
+                    @Override
+                    public void onFailure(@NotNull Call<Movie> call, @NotNull Throwable t) {
+                        onGetMovieList.onFailure(ERROR_WITH_SERVICE);
+                    }
+                });
 
 
     }
 
-    public void getMovieTrailers(final String id, final OnGetMovieTrailers onGetMovieTrailers){
+
+    public LiveData<MovieDetails> getMovieDetails(final String id, boolean forceRefresh){
+        final MutableLiveData<MovieDetails> movieDetailsData = new MutableLiveData<>();
+        LiveData<MovieDetails> movieDetailsRoomData = dbManager.movieDao().getMovieDetailsById(id);
+        MovieDetails hasMovieDetails = dbManager.movieDao().hasMovieDetails(id);
+
+        //Ta no DB Local
+        if (hasMovieDetails != null && !forceRefresh)
+            return movieDetailsRoomData;
+
+        //Nao tem registro local, consulta API
+        movieService.getMovieDetails(id, API_KEY)
+                .enqueue(new Callback<MovieDetails>() {
+                    @Override
+                    public void onResponse(@NotNull Call<MovieDetails> call, @NotNull Response<MovieDetails> response) {
+                        if ( response.body() != null ) {
+                            MovieDetails movieDetails = response.body();
+                            movieDetails.setIdMovie(id);
+                            dbManager.movieDao().insertMovieFav(movieDetails);
+                            movieDetailsData.setValue(movieDetails);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<MovieDetails> call, @NotNull Throwable t) {
+                        movieDetailsData.setValue(null);
+                    }
+                });
+
+        return movieDetailsData;
+    }
+
+    public LiveData<MovieTrailers> getMovieTrailers(final String id){
+        final MutableLiveData<MovieTrailers> movieTrailesData = new MutableLiveData<>();
+
         movieService.getTrailers(id, API_KEY)
                 .enqueue(new Callback<MovieTrailers>() {
                     @Override
                     public void onResponse(@NotNull Call<MovieTrailers> call, @NotNull Response<MovieTrailers> response) {
-                        onGetMovieTrailers.onGetTrailersSuccess(response.body());
+                        movieTrailesData.setValue(response.body());
                     }
 
                     @Override
                     public void onFailure(@NotNull Call<MovieTrailers> call, @NotNull Throwable t) {
-                        onGetMovieTrailers.onGetTrailersFailure(ERROR_WITH_SERVICE);
+                        movieTrailesData.setValue(null);
                     }
                 });
+
+        return movieTrailesData;
     }
 
-    public void getMovieReviews(final String id, final OnGetMovieReviews onGetMovieReviews){
+    public LiveData<MovieReviews> getMovieReviews(final String id){
+        final MutableLiveData<MovieReviews> movieReviews = new MutableLiveData<>();
+
         movieService.getReviews(id, API_KEY)
                 .enqueue(new Callback<MovieReviews>() {
                     @Override
                     public void onResponse(@NotNull Call<MovieReviews> call, @NotNull Response<MovieReviews> response) {
-                        onGetMovieReviews.onGetReviewsSuccess(response.body());
+                        movieReviews.setValue(response.body());
                     }
 
                     @Override
                     public void onFailure(@NotNull Call<MovieReviews> call, @NotNull Throwable t) {
-                        onGetMovieReviews.onGetReviewFailure(ERROR_WITH_SERVICE);
+                        movieReviews.setValue(null);
                     }
                 });
+
+        return movieReviews;
     }
 }
 
-class InternetCheck extends AsyncTask<OnConnectionChecked, Void, Boolean> {
 
-    private OnConnectionChecked onConnectionChecked;
-
-    @Override
-    protected Boolean doInBackground(OnConnectionChecked... onConnectionCheckeds) {
-        if (onConnectionCheckeds[0] != null)
-            onConnectionChecked = onConnectionCheckeds[0];
-        else
-            return false;
-        return NetworkUtils.isInternetConnected();
-    }
-
-    @Override
-    protected void onPostExecute(Boolean isConnected){
-        if (isConnected)
-            onConnectionChecked.isConnected();
-        else
-            onConnectionChecked.isNotConnected();
-    }
-}
 

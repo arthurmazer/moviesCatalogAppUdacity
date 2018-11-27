@@ -1,9 +1,9 @@
 package com.mazerapp.moviecatalogapp.interfaces.retrofit;
 
-import com.mazerapp.moviecatalogapp.models.retrofit.Movie;
-import com.mazerapp.moviecatalogapp.models.retrofit.MovieDetails;
-import com.mazerapp.moviecatalogapp.models.retrofit.MovieReviews;
-import com.mazerapp.moviecatalogapp.models.retrofit.MovieTrailers;
+import com.mazerapp.moviecatalogapp.models.Movie;
+import com.mazerapp.moviecatalogapp.models.MovieDetails;
+import com.mazerapp.moviecatalogapp.models.MovieReviews;
+import com.mazerapp.moviecatalogapp.models.MovieTrailers;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

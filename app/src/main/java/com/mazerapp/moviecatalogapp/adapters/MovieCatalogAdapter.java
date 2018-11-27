@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.mazerapp.moviecatalogapp.R;
-import com.mazerapp.moviecatalogapp.models.retrofit.Movie;
+import com.mazerapp.moviecatalogapp.models.Movie;
 import com.mazerapp.moviecatalogapp.utils.Constants;
 import com.squareup.picasso.Picasso;
 

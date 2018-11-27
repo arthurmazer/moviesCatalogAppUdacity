@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.mazerapp.moviecatalogapp.R;
-import com.mazerapp.moviecatalogapp.models.retrofit.MovieReviews;
+import com.mazerapp.moviecatalogapp.models.MovieReviews;
 
 import java.util.ArrayList;
 import java.util.List;

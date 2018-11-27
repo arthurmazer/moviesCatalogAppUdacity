@@ -1,4 +1,4 @@
-package com.mazerapp.moviecatalogapp.models.retrofit;
+package com.mazerapp.moviecatalogapp.models;
 
 import java.util.List;
 
