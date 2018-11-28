@@ -1,12 +1,10 @@
 package com.mazerapp.moviecatalogapp.activities;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -24,7 +22,6 @@ import android.widget.TextView;
 import com.mazerapp.moviecatalogapp.R;
 import com.mazerapp.moviecatalogapp.adapters.MovieReviewAdapter;
 import com.mazerapp.moviecatalogapp.adapters.MovieTrailersAdapter;
-import com.mazerapp.moviecatalogapp.models.MovieDetails;
 import com.mazerapp.moviecatalogapp.utils.Constants;
 import com.mazerapp.moviecatalogapp.utils.Util;
 import com.mazerapp.moviecatalogapp.viewmodel.MovieDetailsViewModel;
@@ -170,7 +167,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements SwipeRefr
     private void getMovieDetails(final String id, boolean forceRefresh){
         swipeLayout.setRefreshing(true);
 
-        Observer observer = (Observer<MovieDetails>) movieDetails -> {
+        movieDetailsViewModel.getMovieDetails(id, forceRefresh).observe(this, movieDetails -> {
             if(movieDetails != null) {
                 contentPanel.setVisibility(View.VISIBLE);
                 getMovieTrailers(id);
@@ -197,10 +194,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements SwipeRefr
             }
 
 
-            movieDetailsViewModel.getMovieDetails(id, forceRefresh).removeObservers(this);
-        };
+            });
 
-        movieDetailsViewModel.getMovieDetails(id, forceRefresh).observe(this, observer);
 
     }
 

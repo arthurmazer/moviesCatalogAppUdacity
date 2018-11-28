@@ -10,7 +10,7 @@
 
 
     <item
-        android:id="@+id/action_favorite"
+        android:id="@+id/action_settings"
         android:icon="@drawable/ic_more_vert_white_24dp"
         android:title="@string/item_filter_title"
         app:showAsAction="ifRoom">
@@ -18,8 +18,12 @@
         <menu>
             <item android:id="@+id/action_most_popular"
                 android:title="@string/subitem_most_popular" />
+
             <item android:id="@+id/action_top_rating"
-                android:title="@string/subitem_top_rating" />
+            android:title="@string/subitem_top_rating" />
+
+            <item android:id="@+id/action_favorites"
+                android:title="@string/subitem_favorites" />
         </menu>
 
     </item>

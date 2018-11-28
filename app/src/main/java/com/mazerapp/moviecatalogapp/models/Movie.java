@@ -25,8 +25,10 @@ public class Movie {
         return moviesInfoList;
     }
 
-
     public class MovieInfo {
+
+
+
         @SerializedName("id")
         private String id;
         @SerializedName("vote_count")
@@ -70,12 +72,96 @@ public class Movie {
             this.title = title;
         }
 
+        public long getVoteCount() {
+            return voteCount;
+        }
+
+        public void setVoteCount(long voteCount) {
+            this.voteCount = voteCount;
+        }
+
+        public float getVoteAverage() {
+            return voteAverage;
+        }
+
+        public void setVoteAverage(float voteAverage) {
+            this.voteAverage = voteAverage;
+        }
+
+        public float getPopularity() {
+            return popularity;
+        }
+
+        public void setPopularity(float popularity) {
+            this.popularity = popularity;
+        }
+
+        public void setPosterPath(String posterPath) {
+            this.posterPath = posterPath;
+        }
+
+        public String getOriginalLanguage() {
+            return originalLanguage;
+        }
+
+        public void setOriginalLanguage(String originalLanguage) {
+            this.originalLanguage = originalLanguage;
+        }
+
+        public String getOriginalTitle() {
+            return originalTitle;
+        }
+
+        public void setOriginalTitle(String originalTitle) {
+            this.originalTitle = originalTitle;
+        }
+
+        public String getBackdropPath() {
+            return backdropPath;
+        }
+
+        public void setBackdropPath(String backdropPath) {
+            this.backdropPath = backdropPath;
+        }
+
+        public Boolean getAdult() {
+            return adult;
+        }
+
+        public void setAdult(Boolean adult) {
+            this.adult = adult;
+        }
+
+        public List<Integer> getGenreIdList() {
+            return genreIdList;
+        }
+
+        public void setGenreIdList(List<Integer> genreIdList) {
+            this.genreIdList = genreIdList;
+        }
+
+        public String getOverview() {
+            return overview;
+        }
+
+        public void setOverview(String overview) {
+            this.overview = overview;
+        }
+
+        public String getReleaseDate() {
+            return releaseDate;
+        }
+
+        public void setReleaseDate(String releaseDate) {
+            this.releaseDate = releaseDate;
+        }
 
         public String getPosterPath() {
             return posterPath;
         }
 
-
+        public MovieInfo() {
+        }
     }
 
 }

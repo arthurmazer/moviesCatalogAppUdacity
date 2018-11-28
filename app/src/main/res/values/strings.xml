@@ -3,6 +3,7 @@
     <string name="item_filter_title">Filtrar</string>
     <string name="subitem_most_popular">Mais Populares</string>
     <string name="subitem_top_rating">Melhor Classificação</string>
+    <string name="subitem_favorites">Favoritos</string>
     <string name="movie_list_not_found_text">Erro ao buscar lista de filmes, tente novamente mais tarde</string>
     <string name="movie_list_not_found_titulo">Oops</string>
     <string name="loading_data">Carregando…</string>

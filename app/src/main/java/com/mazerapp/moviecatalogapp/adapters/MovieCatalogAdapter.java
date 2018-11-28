@@ -50,12 +50,7 @@ public class MovieCatalogAdapter extends RecyclerView.Adapter<MovieCatalogAdapte
         String urlPoster = Constants.MOVIEES_DB_BASE_IMG_URL + Constants.MOVIES_DB_IMG_SIZES[2] + movie.getPosterPath();
         Picasso.with(context).load(urlPoster).into(holder.poster);
 
-        holder.poster.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clickListener.onMovieClicked(movie);
-            }
-        });
+        holder.poster.setOnClickListener(view -> clickListener.onMovieClicked(movie));
     }
 
     @Override

@@ -73,12 +73,7 @@
                 <TextView
                     android:id="@+id/field_poster"
                     android:text="@string/field_movie_poster"
-                    android:textSize="16sp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
-                    android:textStyle="bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    style="@style/MovieDetailsFields"/>
 
                 <ImageView
                     android:id="@+id/iv_min_poster"
@@ -92,72 +87,43 @@
                 <TextView
                     android:id="@+id/field_release_date"
                     android:text="@string/field_movie_release_date"
-                    android:textSize="16sp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
-                    android:textStyle="bold"
                     android:layout_below="@id/iv_min_poster"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    style="@style/MovieDetailsFields"/>
 
 
                 <TextView
                     android:id="@+id/tv_release_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/field_release_date" />
+                    android:layout_below="@id/field_release_date"
+                    style="@style/MovieDetailsTextContent"/>
 
                 <TextView
                     android:id="@+id/field_movie_duration"
                     android:text="@string/field_movie_duration"
-                    android:textSize="16sp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
-                    android:textStyle="bold"
                     android:layout_below="@id/tv_release_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    style="@style/MovieDetailsFields"/>
 
                 <TextView
                     android:id="@+id/tv_movie_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_height="wrap_content"
                     android:layout_below="@id/field_movie_duration"
-                    android:layout_marginTop="4dp" />
+                    style="@style/MovieDetailsTextContent" />
 
                 <TextView
                     android:id="@+id/field_rating"
                     android:text="@string/field_movie_rating"
-                    android:textSize="16sp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
-                    android:textStyle="bold"
                     android:layout_below="@id/tv_movie_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    style="@style/MovieDetailsFields"/>
 
                 <TextView
                     android:id="@+id/tv_rating_movie"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_below="@id/field_rating"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="4dp" />
+                    style="@style/MovieDetailsTextContent"/>
 
 
                 <TextView
                     android:id="@+id/field_movie_overview"
                     android:text="@string/field_movie_overview"
-                    android:textSize="16sp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
-                    android:textStyle="bold"
                     android:layout_below="@id/tv_rating_movie"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    style="@style/MovieDetailsFields"/>
 
                 <TextView
                     android:id="@+id/tv_movie_description"
@@ -173,14 +139,8 @@
                 <TextView
                     android:id="@+id/field_movie_trailers"
                     android:text="@string/field_movie_trailers"
-                    android:textSize="16sp"
-
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
-                    android:textStyle="bold"
                     android:layout_below="@id/tv_movie_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    style="@style/MovieDetailsFields"/>
 
                 <FrameLayout
                     android:id="@+id/content_trailers"
@@ -217,13 +177,8 @@
                 <TextView
                     android:id="@+id/field_movie_reviews"
                     android:text="@string/field_movie_review"
-                    android:textSize="16sp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
-                    android:textStyle="bold"
                     android:layout_below="@id/content_trailers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    style="@style/MovieDetailsFields"/>
 
                 <FrameLayout
                     android:id="@+id/content_reviews"

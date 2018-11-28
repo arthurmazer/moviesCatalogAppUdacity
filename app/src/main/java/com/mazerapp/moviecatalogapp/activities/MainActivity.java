@@ -1,5 +1,6 @@
 package com.mazerapp.moviecatalogapp.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,15 +16,14 @@ import android.widget.FrameLayout;
 
 import com.mazerapp.moviecatalogapp.R;
 import com.mazerapp.moviecatalogapp.adapters.MovieCatalogAdapter;
-import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieList;
 import com.mazerapp.moviecatalogapp.models.Movie;
-import com.mazerapp.moviecatalogapp.repositories.MovieRepository;
+import com.mazerapp.moviecatalogapp.models.MovieDetails;
 import com.mazerapp.moviecatalogapp.utils.Constants;
 import com.mazerapp.moviecatalogapp.utils.Util;
+import com.mazerapp.moviecatalogapp.viewmodel.MainViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_NO_CONNECTION;
 import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_WITH_SERVICE;
@@ -34,10 +34,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private RecyclerView rvMovies;
     private MovieCatalogAdapter movieCatalogAdapter;
     private ArrayList<Movie.MovieInfo> listOfMovies;
-    private MovieRepository movieRepository;
     private Context context;
     private FrameLayout frameNoConnection;
     private SwipeRefreshLayout swipeLayout;
+
+    private MainViewModel mainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,17 +54,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         frameNoConnection = findViewById(R.id.frame_no_connection);
         swipeLayout = findViewById(R.id.swipe_layout);
 
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
 
         //initiate the adapter and set on click to items
-        movieCatalogAdapter = new MovieCatalogAdapter(listOfMovies, new MovieCatalogAdapter.OnClickItem() {
-            @Override
-            public void onMovieClicked(Movie.MovieInfo movie) {
-                Intent it = new Intent(context, MovieDetailsActivity.class);
-                it.putExtra(Constants.MOVIE_ID_EXTRA, movie.getId());
-                it.putExtra(Constants.MOVIE_TITLE_EXTRA, movie.getTitle());
-                it.putExtra(Constants.MOVIE_POSTER_PATH_EXTRA, movie.getPosterPath());
-                startActivity(it);
-            }
+        movieCatalogAdapter = new MovieCatalogAdapter(listOfMovies, movie -> {
+            Intent it = new Intent(context, MovieDetailsActivity.class);
+            it.putExtra(Constants.MOVIE_ID_EXTRA, movie.getId());
+            it.putExtra(Constants.MOVIE_TITLE_EXTRA, movie.getTitle());
+            it.putExtra(Constants.MOVIE_POSTER_PATH_EXTRA, movie.getPosterPath());
+            startActivity(it);
         });
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
         rvMovies.setLayoutManager(mLayoutManager);
@@ -79,17 +79,49 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void getMostPopularMovieList() {
         swipeLayout.setRefreshing(true);
-        movieRepository = new MovieRepository(this);
-        movieRepository.getListOfMovies(new OnGetMovieList() {
-            @Override
-            public void onSuccess(Movie movie) {
+        mainViewModel.getMostPopularMovieList().observe(this, movie -> {
+            if (movie != null){
                 setTitle(getString(R.string.subitem_most_popular));
                 dataLoadSuccess(movie.getMoviesInfoList());
+            }else{
+                dataLoadFail(ERROR_WITH_SERVICE);
             }
+        });
+    }
 
-            @Override
-            public void onFailure(int code) {
-                dataLoadFail(code);
+    private void getTopRatedMovieList() {
+        swipeLayout.setRefreshing(true);
+
+        mainViewModel.getTopRatedMovieList().observe(this, movie -> {
+            if (movie != null){
+                setTitle(getString(R.string.subitem_top_rating));
+                dataLoadSuccess(movie.getMoviesInfoList());
+            }else{
+                dataLoadFail(ERROR_WITH_SERVICE);
+            }
+        });
+    }
+
+    private void getFavoritesMovies(){
+        swipeLayout.setRefreshing(true);
+
+        mainViewModel.getFavoriteMovies().observe(this, movie -> {
+            if (movie != null){
+                List<Movie.MovieInfo> movies = new ArrayList<>();
+
+                for (MovieDetails movDetails : movie){
+                    Movie movieObj = new Movie();
+                    Movie.MovieInfo movieInfo = movieObj.new MovieInfo();
+
+                    movieInfo.setPosterPath(movDetails.getPosterPath());
+                    movieInfo.setTitle(movDetails.getTitle());
+                    movieInfo.setId(movDetails.getIdMovie());
+
+                    movies.add(movieInfo);
+                }
+
+                setTitle(getString(R.string.subitem_favorites));
+                dataLoadSuccess(movies);
             }
         });
     }
@@ -119,29 +151,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         }
     }
 
-    private void getTopRatedMovieList() {
-        swipeLayout.setRefreshing(true);
-        movieRepository = new MovieRepository(this);
-        movieRepository.getListOfTopRated(new OnGetMovieList() {
-            @Override
-            public void onSuccess(Movie movie) {
-                setTitle(getString(R.string.subitem_top_rating));
-                dataLoadSuccess(movie.getMoviesInfoList());
-            }
-
-            @Override
-            public void onFailure(int code) {
-                dataLoadFail(code);
-            }
-
-        });
-    }
-
     public void doRefresh(){
         if (getTitle().equals(getString(R.string.subitem_most_popular)))
             getMostPopularMovieList();
-        else
+        else if (getTitle().equals(getString(R.string.subitem_top_rating)))
             getTopRatedMovieList();
+        else
+            getFavoritesMovies();
     }
 
 
@@ -165,6 +181,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 return true;
             case R.id.action_top_rating:
                 getTopRatedMovieList();
+                return true;
+            case R.id.action_favorites:
+                getFavoritesMovies();
                 return true;
             case R.id.action_refresh:
                 doRefresh();

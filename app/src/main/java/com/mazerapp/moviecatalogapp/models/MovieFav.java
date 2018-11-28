@@ -36,7 +36,5 @@ public class MovieFav {
         return isFavorite;
     }
 
-    public void setFavorite(Boolean favorite) {
-        isFavorite = favorite;
-    }
+
 }

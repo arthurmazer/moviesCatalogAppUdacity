@@ -46,12 +46,7 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
         final MovieTrailers.TrailerInfo trailer = this.trailers.get(position);
         holder.trailerTitle.setText(trailer.getName());
 
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clickListener.onTrailerClicked(trailer);
-            }
-        });
+        holder.parentLayout.setOnClickListener(view -> clickListener.onTrailerClicked(trailer));
     }
 
 

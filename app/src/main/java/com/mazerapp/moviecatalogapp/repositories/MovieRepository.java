@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 
-import com.mazerapp.moviecatalogapp.interfaces.OnGetMovieList;
 import com.mazerapp.moviecatalogapp.interfaces.retrofit.MovieService;
 import com.mazerapp.moviecatalogapp.models.Movie;
 import com.mazerapp.moviecatalogapp.models.MovieDetails;
@@ -15,12 +14,13 @@ import com.mazerapp.moviecatalogapp.utils.NetworkUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.mazerapp.moviecatalogapp.utils.Constants.API_KEY;
-import static com.mazerapp.moviecatalogapp.utils.Constants.ERROR_WITH_SERVICE;
 
 /**
  * Created by arthur on 13/09/2018.
@@ -44,37 +44,42 @@ public class MovieRepository {
        dbManager.movieDao().setMovieFavorite(new MovieFav(idMovie, isFavorite));
     }
 
-    public void getListOfMovies(final OnGetMovieList onGetMovieList){
+    public LiveData<List<MovieDetails>> getFavoriteMovies(){
+        return dbManager.movieDao().getFavoriteMovies();
+    }
+
+    public LiveData<Movie> getListOfMovies(){
+        final MutableLiveData<Movie> movieDetailsData = new MutableLiveData<>();
         movieService.listMostPopular(API_KEY)
                 .enqueue(new Callback<Movie>() {
                     @Override
                     public void onResponse(@NotNull Call<Movie> call, @NotNull Response<Movie> response) {
-                        onGetMovieList.onSuccess(response.body());
+                        movieDetailsData.setValue(response.body());
                     }
 
                     @Override
                     public void onFailure(@NotNull Call<Movie> call, @NotNull Throwable t) {
-                        onGetMovieList.onFailure(ERROR_WITH_SERVICE);
+                        movieDetailsData.setValue(null);
                     }
                 });
-
+            return movieDetailsData;
     }
 
-    public void getListOfTopRated(final OnGetMovieList onGetMovieList){
+    public LiveData<Movie> getListOfTopRated(){
+        final MutableLiveData<Movie> movieDetailsData = new MutableLiveData<>();
         movieService.listTopRated(API_KEY)
                 .enqueue(new Callback<Movie>() {
                     @Override
                     public void onResponse(@NotNull Call<Movie> call, @NotNull Response<Movie> response) {
-                        onGetMovieList.onSuccess(response.body());
+                        movieDetailsData.setValue(response.body());
                     }
 
                     @Override
                     public void onFailure(@NotNull Call<Movie> call, @NotNull Throwable t) {
-                        onGetMovieList.onFailure(ERROR_WITH_SERVICE);
+                        movieDetailsData.setValue(null);
                     }
                 });
-
-
+        return movieDetailsData;
     }
 
 
