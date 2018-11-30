@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 
+import com.mazerapp.moviecatalogapp.BuildConfig;
 import com.mazerapp.moviecatalogapp.interfaces.retrofit.MovieService;
 import com.mazerapp.moviecatalogapp.models.Movie;
 import com.mazerapp.moviecatalogapp.models.MovieDetails;
@@ -20,7 +21,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.mazerapp.moviecatalogapp.utils.Constants.API_KEY;
 
 /**
  * Created by arthur on 13/09/2018.
@@ -30,6 +30,8 @@ public class MovieRepository {
 
     private MovieService movieService;
     private DbManager dbManager;
+
+    private String API_KEY = BuildConfig.MOVIE_DB_API_KEY;
 
     public MovieRepository(Context ctx){
         movieService = NetworkUtils.buildUrl().create(MovieService.class);

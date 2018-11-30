@@ -4,11 +4,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,8 +40,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private Context context;
     private FrameLayout frameNoConnection;
     private SwipeRefreshLayout swipeLayout;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     private MainViewModel mainViewModel;
+    public static final String RV_STATE_KEY = "rv_state";
+    public static final String OPTION_SELECTED_KEY = "option_selected";
+    public Parcelable layoutState;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,17 +73,44 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             it.putExtra(Constants.MOVIE_POSTER_PATH_EXTRA, movie.getPosterPath());
             startActivity(it);
         });
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+
+
+        mLayoutManager = new GridLayoutManager(this, calculateBestSpanCount(500));
         rvMovies.setLayoutManager(mLayoutManager);
         rvMovies.setItemAnimator(new DefaultItemAnimator());
         rvMovies.setAdapter(movieCatalogAdapter);
 
         swipeLayout.setOnRefreshListener(this);
 
-        //load initial data
-        getMostPopularMovieList();
+        if (savedInstanceState != null){
+            if (savedInstanceState.getString(OPTION_SELECTED_KEY).equals(getString(R.string.subitem_most_popular)))
+                getMostPopularMovieList();
+            else if (savedInstanceState.getString(OPTION_SELECTED_KEY).equals(getString(R.string.subitem_top_rating)))
+                getTopRatedMovieList();
+            else
+                getFavoritesMovies();
+        }else
+            getMostPopularMovieList();
+
     }
 
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        layoutState = rvMovies.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable(RV_STATE_KEY, layoutState);
+        outState.putString(OPTION_SELECTED_KEY, getTitle().toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        layoutState = savedInstanceState.getParcelable(RV_STATE_KEY);
+
+    }
 
     private void getMostPopularMovieList() {
         swipeLayout.setRefreshing(true);
@@ -133,6 +168,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         rvMovies.setVisibility(View.VISIBLE);
         listOfMovies.addAll(movies);
         movieCatalogAdapter.notifyDataSetChanged();
+
+        if (layoutState != null)
+            rvMovies.getLayoutManager().onRestoreInstanceState(layoutState);
+
     }
 
     public void dataLoadFail(int code){
@@ -151,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         }
     }
 
+
     public void doRefresh(){
         if (getTitle().equals(getString(R.string.subitem_most_popular)))
             getMostPopularMovieList();
@@ -158,6 +198,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             getTopRatedMovieList();
         else
             getFavoritesMovies();
+    }
+
+    private int calculateBestSpanCount(int posterWidth) {
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+        float screenWidth = outMetrics.widthPixels;
+        return Math.round(screenWidth / posterWidth);
     }
 
 

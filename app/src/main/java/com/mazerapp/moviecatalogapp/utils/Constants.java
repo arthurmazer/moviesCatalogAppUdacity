@@ -6,7 +6,6 @@ package com.mazerapp.moviecatalogapp.utils;
 
 public class Constants {
 
-    public static final String API_KEY = "";
     public static final String MOVIESDB_API_BASE_URL = "https://api.themoviedb.org/";
     public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
